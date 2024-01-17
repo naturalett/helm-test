@@ -12,7 +12,7 @@ on:
 
 jobs:
   gitops-release:
-    if: github.actor != 'github_actions' && ${GITHUB_REF##*/} == 'develop'
+    if: github.actor != 'github_actions' && '${GITHUB_REF##*/}' == 'develop'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
