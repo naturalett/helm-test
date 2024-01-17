@@ -12,12 +12,10 @@ on:
 
 jobs:
   gitops-release:
-    if: github.actor != 'github_actions' # && github.event.client_payload.gitops_release == 'First Workflow'
+    if: github.actor != 'github_actions'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Are you being triggered by another workflow?
-      run: echo ${{ github.event.client_payload.gitops_release }}
     - name: Retrieve the version of the release
       run: echo "RELEASE_VERSION=v`cat VERSION`_`git rev-parse --short origin/${GITHUB_REF##*/}`" >> $GITHUB_ENV;
     - name: Define the image tag for Helm
