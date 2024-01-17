@@ -14,6 +14,3 @@ jobs:
     - name: Test
       run: |
         echo "Run First Test"
-  # call-workflow-gitops-release:
-  #   uses: neosec-com/clickhouse-operator/.github/workflows/gitops-release.yml@test
-    #     client-payload: '{"gitops_release": "First Workflow"}'
