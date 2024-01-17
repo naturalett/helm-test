@@ -1,0 +1,31 @@
+name: 'GitOps Release'
+
+# on:
+#   repository_dispatch:
+#     types: [gitops-release]
+
+on:
+  workflow_run:
+    workflows: ["First Workflow"]
+    types:
+      - completed
+
+jobs:
+  gitops-release:
+    if: github.actor != 'github_actions' # && github.event.client_payload.gitops_release == 'First Workflow'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Are you being triggered by another workflow?
+      run: echo ${{ github.event.client_payload.gitops_release }}
+    - name: Retrieve the version of the release
+      run: echo "RELEASE_VERSION=v`cat VERSION`_`git rev-parse --short origin/${GITHUB_REF##*/}`" >> $GITHUB_ENV;
+    - name: Define the image tag for Helm
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq -i e '.image.tag2 = "${{ env.RELEASE_VERSION }}"' ./helm/values.yaml
+    - name: GitHub automatic commit tagging
+      uses: EndBug/add-and-commit@v9
+      with:
+        default_author: github_actions
+        message: "Releasing a version ${{ env.RELEASE_VERSION }}"
