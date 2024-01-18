@@ -8,7 +8,7 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
-  tag2: "v_4aeb0e5"
+  tag2: "v_353e5be"
 nameOverride: ""
 fullnameOverride: ""
 serviceAccount:
