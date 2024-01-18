@@ -26,12 +26,12 @@ jobs:
         if: github.actor != 'github_actions' && ${{ env.BRANCH_NAME }} == 'develop'
         run: echo "RELEASE_VERSION=v`cat VERSION`_`git rev-parse --short origin/${GITHUB_REF##*/}`" >> $GITHUB_ENV;
       - name: Define the image tag for Helm
-        if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
+        if: github.actor != 'github_actions' && ${{ env.BRANCH_NAME }} == 'develop'
         uses: mikefarah/yq@master
         with:
           cmd: yq -i e '.image.tag2 = "${{ env.RELEASE_VERSION }}"' ./helm/values.yaml
       - name: GitHub automatic commit tagging
-        if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
+        if: github.actor != 'github_actions' && ${{ env.BRANCH_NAME }} == 'develop'
         uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
