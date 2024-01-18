@@ -15,6 +15,7 @@ jobs:
   which_branch:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       # extract branch name
       - name: Extract branch name
         if: github.event_name != 'pull_request'
@@ -24,20 +25,36 @@ jobs:
       # print branch name
       - name: Get branch name
         run: echo 'The branch name is' $BRANCH_NAME
+      - name: Retrieve the version of the release
+        if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
+        run: echo "RELEASE_VERSION=v`cat VERSION`_`git rev-parse --short origin/${GITHUB_REF##*/}`" >> $GITHUB_ENV;
+      - name: Define the image tag for Helm
+        if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i e '.image.tag2 = "${{ env.RELEASE_VERSION }}"' ./helm/values.yaml
+      - name: GitHub automatic commit tagging
+        if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: "Releasing a version ${{ env.RELEASE_VERSION }}"
 
-  gitops-release:
-    if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Retrieve the version of the release
-      run: echo "RELEASE_VERSION=v`cat VERSION`_`git rev-parse --short origin/${GITHUB_REF##*/}`" >> $GITHUB_ENV;
-    - name: Define the image tag for Helm
-      uses: mikefarah/yq@master
-      with:
-        cmd: yq -i e '.image.tag2 = "${{ env.RELEASE_VERSION }}"' ./helm/values.yaml
-    - name: GitHub automatic commit tagging
-      uses: EndBug/add-and-commit@v9
-      with:
-        default_author: github_actions
-        message: "Releasing a version ${{ env.RELEASE_VERSION }}"
+
+  # gitops-release:
+  #   needs: which_branch
+  #   if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Retrieve the version of the release
+  #     run: echo "RELEASE_VERSION=v`cat VERSION`_`git rev-parse --short origin/${GITHUB_REF##*/}`" >> $GITHUB_ENV;
+  #   - name: Define the image tag for Helm
+  #     uses: mikefarah/yq@master
+  #     with:
+  #       cmd: yq -i e '.image.tag2 = "${{ env.RELEASE_VERSION }}"' ./helm/values.yaml
+  #   - name: GitHub automatic commit tagging
+  #     uses: EndBug/add-and-commit@v9
+  #     with:
+  #       default_author: github_actions
+  #       message: "Releasing a version ${{ env.RELEASE_VERSION }}"
