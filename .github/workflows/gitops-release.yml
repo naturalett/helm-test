@@ -9,10 +9,12 @@ on:
     workflows: ["First Workflow"]
     types:
       - completed
+    branches:
+      - 'develop'
 
 jobs:
   gitops-release:
-    if: github.actor != 'github_actions' && github.ref == 'refs/heads/develop'
+    if: github.actor != 'github_actions'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
