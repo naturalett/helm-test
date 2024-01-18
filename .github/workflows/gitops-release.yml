@@ -18,15 +18,12 @@ jobs:
       - uses: actions/checkout@v2
       # extract branch name
       - name: Extract branch name
-        if: github.event_name != 'pull_request'
-        shell: bash
-        run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
       # print branch name
       - name: Get branch name
-        run: echo 'The branch name is' $BRANCH_NAME
+        run: echo "The branch name is ${{ env.BRANCH_NAME }}"
       - name: Retrieve the version of the release
-        if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
+        if: github.actor != 'github_actions' && ${{ env.BRANCH_NAME }} == 'develop'
         run: echo "RELEASE_VERSION=v`cat VERSION`_`git rev-parse --short origin/${GITHUB_REF##*/}`" >> $GITHUB_ENV;
       - name: Define the image tag for Helm
         if: github.actor != 'github_actions' && $BRANCH_NAME == 'develop'
