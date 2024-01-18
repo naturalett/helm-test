@@ -14,8 +14,3 @@ jobs:
     - name: Test
       run: |
         echo "Run First Test"
-    # - name: Workflow GitOps Release
-    #   uses: peter-evans/repository-dispatch@v2
-    #   with:
-    #     event-type: gitops-release
-    #     client-payload: '{"gitops_release": "true"}'
