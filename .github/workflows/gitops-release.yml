@@ -10,7 +10,6 @@ on:
     types:
       - completed
 
-
 jobs:
   gitops-release:
     if: github.actor != 'github_actions' && github.ref == 'refs/heads/develop'
