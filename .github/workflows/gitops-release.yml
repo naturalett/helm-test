@@ -9,9 +9,6 @@ on:
     workflows: ["First Workflow"]
     types:
       - completed
-  push:
-    branches: [develop]
-
 
 jobs:
   gitops-release:
